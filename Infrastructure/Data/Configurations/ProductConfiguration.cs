@@ -15,6 +15,8 @@ namespace Infrastructure.Data.Configurations
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasQueryFilter(x => x.IsDelete == false);
+
             builder.ToTable("Products");
         }
     }

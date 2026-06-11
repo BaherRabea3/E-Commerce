@@ -1,6 +1,9 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Interfaces.Common;
 using Infrastructure.Data;
+using Infrastructure.Data.Interceptors;
 using Infrastructure.Identity;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,9 +16,11 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+
             services.AddDbContext<AppDbContext>(options =>
                                                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")
                                                                     )
+                                                .AddInterceptors(new SoftDeleteInterceptor())
                                               );
             services.AddDataProtection();
 
@@ -25,6 +30,8 @@ namespace Infrastructure
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IAppDbContext, AppDbContext>();
+
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }
