@@ -1,10 +1,11 @@
 ﻿using Domain.Entities.CartItems;
 using Domain.Entities.Categories;
 using Domain.Entities.OrderItems;
+using Domain.Interfaces.Common;
 
 namespace Domain.Entities.Products
 {
-    public class Product
+    public class Product : ISoftDeleteable
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;
@@ -16,5 +17,7 @@ namespace Domain.Entities.Products
         public Category? Category { get; set; }
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public bool IsDelete { get ; set ; }
+        public DateTime? DateDeleted { get ; set ; }
     }
 }

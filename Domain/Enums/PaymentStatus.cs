@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities.Payments
+﻿namespace Domain.Enums
 {
     public enum PaymentStatus
     {

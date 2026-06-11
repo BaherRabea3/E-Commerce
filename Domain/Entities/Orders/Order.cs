@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Payments;
 using Domain.Entities.Customers;
 using Domain.Entities.OrderItems;
+using Domain.Enums;
 
 namespace Domain.Entities.Orders
 {

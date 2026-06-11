@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Addresses;
 using Domain.Entities.Orders;
+using Domain.Enums;
 
 namespace Domain.Entities.Shipments
 {
