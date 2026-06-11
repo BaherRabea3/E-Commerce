@@ -1,4 +1,5 @@
 
+using API.Exceptions;
 using Application;
 using Infrastructure;
 
@@ -11,6 +12,9 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddControllers();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication();
@@ -28,7 +32,11 @@ namespace API
                 app.UseSwaggerUI();
             }
 
+
             app.UseHttpsRedirection();
+
+            app.UseExceptionHandler();
+
 
             app.UseAuthorization();
 
