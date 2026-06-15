@@ -1,8 +1,6 @@
 ﻿using Domain.Common;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace API.Controllers
 {
@@ -28,10 +26,16 @@ namespace API.Controllers
                         error: result.Error,
                         errors: validationResult.Errors)),
 
-                { Error : { Type: var type } } when type == ErrorType.NotFound => NotFound(
+                { Error : { Type: ErrorType.NotFound } }  => NotFound(
                     CreateProblemDetails(
                         title: "Not Found Error",
                         status: StatusCodes.Status404NotFound,
+                        error: result.Error)),
+
+                { Error : { Type: ErrorType.Conflict } } => Conflict(
+                    CreateProblemDetails(
+                        title: "Conflict Error",
+                        status: StatusCodes.Status409Conflict,
                         error: result.Error)),
 
                 _ => BadRequest(
