@@ -38,6 +38,12 @@ namespace API.Controllers
                         status: StatusCodes.Status409Conflict,
                         error: result.Error)),
 
+                { Error : { Type: ErrorType.UnprocessableEntity} } => UnprocessableEntity(
+                    CreateProblemDetails(
+                        title: "Un processable Entity error",
+                        status: StatusCodes.Status422UnprocessableEntity,
+                        error: result.Error)),
+
                 _ => BadRequest(
                     CreateProblemDetails(
                         title: "Validation Error",

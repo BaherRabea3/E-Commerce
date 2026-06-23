@@ -28,6 +28,8 @@
             => new(code, description, ErrorType.Conflict);
         public static Error Failure(string code, string description)
             => new(code, description, ErrorType.Failure);
+        public static Error UnprocessableEntity(string code, string description)
+            => new(code, description, ErrorType.UnprocessableEntity);
 
     }
     public enum ErrorType
@@ -35,7 +37,8 @@
         Failure = 0,
         Validation = 1,
         NotFound = 2,
-        Conflict = 3
+        Conflict = 3,
+        UnprocessableEntity = 4
     }
 
 }
