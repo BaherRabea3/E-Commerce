@@ -9,6 +9,7 @@ using Domain.Entities.Payments;
 using Domain.Entities.Products;
 using Domain.Entities.Shipments;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Application.Common.Interfaces
 {
@@ -24,6 +25,7 @@ namespace Application.Common.Interfaces
          DbSet<Cart> Carts { get; }
          DbSet<CartItem> CartItems { get; }
          DbSet<Category> Categories { get; }
+         DatabaseFacade Database { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
