@@ -5,7 +5,6 @@ using Application.Features.Carts.Commands.UpdateCartItem;
 using Application.Features.Carts.Queries.GetCart;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -15,14 +14,12 @@ namespace API.Controllers
         {
         }
 
-        public Guid GetCustomerId
-            => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
 
-            var response = await _mediator.Send(new GetCartQuery(GetCustomerId));
+            var response = await _mediator.Send(new GetCartQuery(CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }
@@ -32,7 +29,7 @@ namespace API.Controllers
         {
 
             var response = await _mediator
-                .Send(new AddToCartCommand(productId, quantity, GetCustomerId));
+                .Send(new AddToCartCommand(productId, quantity, CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }
@@ -42,7 +39,7 @@ namespace API.Controllers
         {
 
             var response = await _mediator
-                .Send(new UpdateCartItemCommand(productId, quantity, GetCustomerId));
+                .Send(new UpdateCartItemCommand(productId, quantity, CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }
@@ -52,7 +49,7 @@ namespace API.Controllers
         {
 
             var response = await _mediator
-                .Send(new DeleteCartItemCommand(id,  GetCustomerId));
+                .Send(new DeleteCartItemCommand(id,  CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }
@@ -62,7 +59,7 @@ namespace API.Controllers
         {
 
             var response = await _mediator
-                .Send(new ClearCartCommand(GetCustomerId));
+                .Send(new ClearCartCommand(CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }

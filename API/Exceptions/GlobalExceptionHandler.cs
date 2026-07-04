@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Application.Common.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Exceptions
@@ -16,15 +17,33 @@ namespace API.Exceptions
         {
            _logger.LogError(exception,"Exception occured: {Message}",exception.Message);
 
-            var problemDetails = new ProblemDetails
+            var problem = exception switch
             {
-                Title = "Server Error",
-                Status = StatusCodes.Status500InternalServerError,
+                PaymentGatewayException ex => new ProblemDetails
+                {
+                    Title = "Payment gateway error.",
+                    Status = StatusCodes.Status502BadGateway,
+                    Detail = "A payment processor error occurred. Your order has been saved — please retry payment."
+                },
+
+                UnauthorizedAccessException => new ProblemDetails
+                {
+                    Title = "Unauthorized.",
+                    Detail = "Authentication is required.",
+                    Status = StatusCodes.Status401Unauthorized
+                },
+
+                _ => new ProblemDetails
+                {
+                    Title = "Internal Server Error.",
+                    Detail = "An unexpected error occurred.",
+                    Status = StatusCodes.Status500InternalServerError
+                }
             };
 
-            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            httpContext.Response.StatusCode = problem.Status!.Value;
 
-            await httpContext.Response.WriteAsJsonAsync(problemDetails,cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(problem,cancellationToken);
 
             return true;
 

@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -14,7 +15,9 @@ namespace API.Controllers
         {
             _mediator = mediator;
         }
-
+        protected Guid CustomerId =>
+           Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
+               ?? throw new UnauthorizedAccessException("CustomerId claim missing from token."));
         protected IActionResult HandleFailure(Result result) =>
             result switch
             {
