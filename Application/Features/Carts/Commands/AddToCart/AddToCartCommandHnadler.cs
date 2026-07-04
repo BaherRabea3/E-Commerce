@@ -24,7 +24,10 @@ namespace Application.Features.Carts.Commands.AddToCart
             if (product is null)
                 return Result.Failure<int>(ProductErrors.NotFound(request.productId));
 
-            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == request.customerId);
+            if (product.IsDeleted)
+                return Result.Failure<int>(ProductErrors.Discontinued);
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == request.customerId, cancellationToken);
 
             CartItem? cartItem = null;
 
@@ -41,7 +44,7 @@ namespace Application.Features.Carts.Commands.AddToCart
             {
                  cartItem = await _context.CartItems
                                     .FirstOrDefaultAsync(ct => ct.CartId == cart.Id
-                                                        && ct.ProductId == product.Id);
+                                                        && ct.ProductId == product.Id, cancellationToken);
             }
 
                 
@@ -50,6 +53,7 @@ namespace Application.Features.Carts.Commands.AddToCart
 
             if (requestedTotalQuantity > product.Quantity)
                 return Result.Failure<int>(CartErrors.InsufficientStock);
+            
 
             if (cartItem is null)
             {
@@ -57,6 +61,7 @@ namespace Application.Features.Carts.Commands.AddToCart
                 {
                     Cart =cart,
                     ProductId = product.Id,
+                    UnitPrice = product.UnitPrice,
                     Quantity = request.quantity
                 };
                 _context.CartItems.Add(cartItem);
@@ -64,6 +69,7 @@ namespace Application.Features.Carts.Commands.AddToCart
             else
             {
                 cartItem.Quantity = requestedTotalQuantity;
+                cartItem.UnitPrice = product.UnitPrice;
             }
 
 
