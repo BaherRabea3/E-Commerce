@@ -2,6 +2,7 @@
 using Domain.Entities.Categories;
 using Domain.Entities.OrderItems;
 using Domain.Interfaces.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities.Products
 {
@@ -17,7 +18,10 @@ namespace Domain.Entities.Products
         public Category? Category { get; set; }
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-        public bool IsDelete { get ; set ; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = default!; // for race condition
+        public bool IsDeleted { get ; set ; }
         public DateTime? DateDeleted { get ; set ; }
     }
 }

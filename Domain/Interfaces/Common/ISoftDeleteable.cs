@@ -3,17 +3,17 @@ namespace Domain.Interfaces.Common
 {
     public interface ISoftDeleteable
     {
-        bool IsDelete { get; set; }
+        bool IsDeleted { get; set; }
         DateTime? DateDeleted { get; set; }
 
         void Delete()
         {
-            IsDelete = true;
+            IsDeleted = true;
             DateDeleted = DateTime.UtcNow;
         }
         void UndoDelete()
         {
-            IsDelete = false;
+            IsDeleted = false;
             DateDeleted = null;
         }
     }

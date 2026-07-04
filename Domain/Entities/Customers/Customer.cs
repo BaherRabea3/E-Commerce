@@ -9,6 +9,7 @@ namespace Domain.Entities.Customers
     {
         public Guid Id { get; set; }
         public int UserId { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = default!;
         public DateTime CreatedAt { get; set; }
         public DateTime DateOfBirth { get; set; }

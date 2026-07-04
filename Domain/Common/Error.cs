@@ -30,6 +30,8 @@
             => new(code, description, ErrorType.Failure);
         public static Error UnprocessableEntity(string code, string description)
             => new(code, description, ErrorType.UnprocessableEntity);
+        public static Error BadGateway(string code, string description)
+           => new(code, description, ErrorType.BadGateway);
 
     }
     public enum ErrorType
@@ -38,7 +40,8 @@
         Validation = 1,
         NotFound = 2,
         Conflict = 3,
-        UnprocessableEntity = 4
+        UnprocessableEntity = 4,
+        BadGateway = 5
     }
 
 }

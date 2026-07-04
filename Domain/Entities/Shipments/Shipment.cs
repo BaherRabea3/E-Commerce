@@ -8,8 +8,9 @@ namespace Domain.Entities.Shipments
     {
         public int Id { get; set; }
         public string city { get; set; } = default!;
-        public DateTime Date { get; set; }
-        public DateTime DeliveryDate { get; set; } 
+        public string? TrackingNumber { get; set; }
+        public DateTime EstimatedDeliveryDate { get; set; }
+        public DateTime ActualDeliveryDate { get; set; } 
         public int OrderId { get; set; }
         public Order? Order { get; set; }
         public string Method { get; set; } = default!;

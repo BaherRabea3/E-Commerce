@@ -7,10 +7,12 @@ namespace Domain.Entities.Payments
     public class Payment
     {
         public int Id { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime PaidAt { get; set; }
         public string Method { get; set; } = default!;
         public decimal Amount { get; set; }
         public PaymentStatus Status { get; set; }
+        public string GatewayTransactionId { get; set; } = default!;
         public Guid CustomerId { get; set; }
         public int OrderId { get; set; }
         public Customer? Customer { get; set; }
