@@ -9,6 +9,10 @@ namespace Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<Cart> builder)
         {
 
+            builder
+                .HasIndex(x => x.CustomerId)
+                .IsUnique();
+
             builder.ToTable("Carts");
         }
     }

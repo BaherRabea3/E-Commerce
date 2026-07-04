@@ -3,6 +3,7 @@ using Domain.Entities.Payments;
 using Domain.Entities.Shipments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace Infrastructure.Data.Configurations
 {
@@ -14,6 +15,14 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
+
+            builder.HasIndex(x => x.IdempotencyKey)
+                .IsUnique();
+
+            builder.HasOne(o => o.Address)
+                .WithMany()
+                .HasForeignKey(o => o.AddressId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.Payment)
                 .WithOne(x => x.Order)

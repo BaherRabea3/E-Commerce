@@ -9,13 +9,14 @@ namespace Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+            builder.Property(x => x.RowVersion).IsRowVersion();
 
             builder.HasOne(x => x.Category)
                 .WithMany(x => x.Products)
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasQueryFilter(x => x.IsDelete == false);
+            builder.HasQueryFilter(x => x.IsDeleted == false);
 
             builder.ToTable("Products");
         }
