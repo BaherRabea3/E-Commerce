@@ -2,6 +2,7 @@
 using API.Exceptions;
 using Application;
 using Infrastructure;
+using Infrastructure.Services.PaymentServices;
 
 namespace API
 {
@@ -12,6 +13,8 @@ namespace API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
             builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

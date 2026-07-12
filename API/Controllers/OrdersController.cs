@@ -3,6 +3,7 @@ using Application.Features.Orders.Commands.CancelOrder;
 using Application.Features.Orders.Commands.PlaceOrder;
 using Application.Features.Orders.Queries.GetOrderById;
 using Application.Features.Orders.Queries.GetOrdersByCustomerId;
+using Application.Features.Payments.Queries.GetPaymentDetails;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +36,14 @@ namespace API.Controllers
         {
             var response = await _mediator
                 .Send(new GetOrderByIdQuery(id, CustomerId));
+
+            return response.IsSuccess ? Ok(response) : HandleFailure(response);
+        }
+
+        [HttpGet("{id:int}/payment")]
+        public async Task<IActionResult> GetPayment(int OrderId)
+        {
+            var response = await _mediator.Send(new GetPaymentDetailsQuery(OrderId, CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
         }
