@@ -17,6 +17,20 @@ namespace Domain.Entities.Payments
         public int OrderId { get; set; }
         public Customer? Customer { get; set; }
         public Order? Order { get; set; }
+
+        private static Dictionary<PaymentStatus, IReadOnlyList<PaymentStatus>> AllowedTransitions
+            => new()
+            {
+                [PaymentStatus.Pending] = new[] {PaymentStatus.Completed, PaymentStatus.Failed},
+                [PaymentStatus.Completed] = new[] { PaymentStatus.Refunded },
+                [PaymentStatus.Failed] = new[] { PaymentStatus.Pending },
+                [PaymentStatus.Refunded] = Array.Empty<PaymentStatus>(),
+            };
+
+        public bool CanTransitionTo(PaymentStatus newStatus)
+            => AllowedTransitions.TryGetValue(Status , out var allowed)
+            && allowed.Contains(newStatus);
+
     }
 
 }
