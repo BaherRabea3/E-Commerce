@@ -2,7 +2,7 @@
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Identity;
-using Infrastructure.Services;
+using Infrastructure.Services.PaymentServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,7 +32,7 @@ namespace Infrastructure
 
             services.AddScoped<IAppDbContext, AppDbContext>();
 
-            services.AddScoped<IFileService, Services.FileService>();
+            services.AddScoped<IFileService, Services.FileServices.FileService>();
 
             services.AddSingleton<StripeClient>(new StripeClient(
                 configuration["Stripe:SecretKey"]));
