@@ -11,6 +11,8 @@ namespace Application.Common.Interfaces
 
         Task<GetClientSecretResult> GetClientSecretAsync(string gatewayTransactionId, CancellationToken cancellationToken);
 
+        string GetGatewayTransactionId(string Rawjson);
+
         sealed record CreatePaymentIntentResult(string? ClientSecret, string? GatewayTransactionId);
         sealed record GetClientSecretResult(string? ClientSecret);
 

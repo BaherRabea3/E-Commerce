@@ -26,6 +26,7 @@ namespace Application.Common.Interfaces
          DbSet<CartItem> CartItems { get; }
          DbSet<Category> Categories { get; }
          DatabaseFacade Database { get; }
+        DbSet<PaymentGatewayEvent> PaymentGatewayEvents { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
