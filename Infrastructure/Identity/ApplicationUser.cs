@@ -5,7 +5,13 @@ namespace Infrastructure.Identity
 {
     public class ApplicationUser : IdentityUser<int>
     {
-        public string FullName { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
+
+        public string? RefreshToken { get; set; } = default!;
+
+        public DateTime? RefreshTokenExpiration {  get; set; } = default!;
+
         public Customer? Customer { get; set; }
     }
 }
