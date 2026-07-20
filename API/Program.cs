@@ -1,6 +1,7 @@
 
 using API.Exceptions;
 using Application;
+using Application.Common.Settings;
 using Infrastructure;
 using Infrastructure.Services.PaymentServices;
 
@@ -15,6 +16,7 @@ namespace API
             // Add services to the container.
 
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
             builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

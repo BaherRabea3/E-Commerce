@@ -1,12 +1,15 @@
 ﻿using API.Requests.Orders;
+using API.Requests.Shippings;
 using Application.Features.Orders.Commands.UpdateOrderStatus;
 using Application.Features.Orders.Queries.GetAllOrders;
 using Application.Features.Payments.Commands.RefundPayment;
 using Application.Features.Payments.Commands.UpdatePaymentStatus;
+using Application.Features.Shipments.Commands.UpdateShipment;
 using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
@@ -57,6 +60,18 @@ namespace API.Controllers
                 cancellationToken);
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
+        }
+
+        [HttpPatch("shipping/{id:int}")]
+        public async Task<IActionResult> UpdateShipping(int id, UpdateShippingRequest request)
+        {
+            var response = await _mediator.Send(new UpdateShipmentCommand(id,
+                                                                    request.ShipmentMethod,
+                                                                    request.ShippingStatus,
+                                                                    request.EstimatedDeliveryDate,
+                                                                    request.ActualDeliveryDate));
+
+            return response.IsSuccess ? NoContent() : HandleFailure(response);
         }
     }
 }

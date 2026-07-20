@@ -4,6 +4,7 @@ using Application.Features.Orders.Commands.PlaceOrder;
 using Application.Features.Orders.Queries.GetOrderById;
 using Application.Features.Orders.Queries.GetOrdersByCustomerId;
 using Application.Features.Payments.Queries.GetPaymentDetails;
+using Application.Features.Shipments.Queries.GetShipmentDetails;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,14 @@ namespace API.Controllers
                 .Send(new CancelOrderCommand(id, CustomerId));
 
             return response.IsSuccess ? Ok(response) : HandleFailure(response);
+        }
+
+        [HttpGet("{orderId:int}/shipping")]
+        public async Task<IActionResult> GetShippingDetails(int orderId)
+        {
+            var response = await _mediator.Send(new GetShipmentDetailsQuery(orderId));
+
+            return response.IsSuccess ? Ok(response.Value) : HandleFailure(response);
         }
     }
 }
