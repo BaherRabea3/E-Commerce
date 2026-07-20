@@ -18,5 +18,24 @@ namespace Domain.Entities.Shipments
         public int AddressId { get; set; }
         public Address? Address { get; set; }
 
+        private static Dictionary<ShippingStatus, IReadOnlyList<ShippingStatus>> AllowedTransitions => new()
+        {
+            [ShippingStatus.Pending] =
+            new[] { ShippingStatus.Delivered, ShippingStatus.Cancelled, ShippingStatus.InTransit },
+
+            [ShippingStatus.InTransit] =
+            new[] { ShippingStatus.Delivered, ShippingStatus.Cancelled },
+
+            [ShippingStatus.Delivered] = Array.Empty<ShippingStatus>(),
+            [ShippingStatus.Cancelled] = Array.Empty<ShippingStatus>()
+
+
+        };
+
+        public bool CanTransitionTo(ShippingStatus NewshippingStatus) =>
+            AllowedTransitions.TryGetValue(Status, out var allowed)
+            && allowed.Contains(NewshippingStatus);
+
+
     }
 }
