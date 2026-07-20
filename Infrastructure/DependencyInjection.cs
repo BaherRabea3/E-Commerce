@@ -47,12 +47,12 @@ namespace Infrastructure
               options.TokenValidationParameters = new TokenValidationParameters()
               {
                   ValidateIssuer = true,
-                  ValidIssuer = configuration["Jwt:Issuer"],
+                  ValidIssuer = configuration["JwtOptions:Issuer"],
                   ValidateAudience = true,
-                  ValidAudience =configuration["Jwt:Audience"],
+                  ValidAudience =configuration["JwtOptions:Audience"],
                   ValidateLifetime = true,
                   ValidateIssuerSigningKey = true,
-                  IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]))
+                  IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"]))
               };
           });
 

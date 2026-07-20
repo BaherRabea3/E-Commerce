@@ -42,7 +42,7 @@ namespace API
 
             app.UseExceptionHandler();
 
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

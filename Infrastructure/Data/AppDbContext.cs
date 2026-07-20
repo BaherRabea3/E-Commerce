@@ -33,7 +33,7 @@ namespace Infrastructure.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<PaymentGatewayEvent> PaymentGatewayEvents { get; }
+        public DbSet<PaymentGatewayEvent> PaymentGatewayEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

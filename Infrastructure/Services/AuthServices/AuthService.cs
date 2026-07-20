@@ -9,12 +9,9 @@ namespace Infrastructure.Services.AuthServices
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtProvider _jwtProvider;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtProvider jwtProvider)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _jwtProvider = jwtProvider;
         }
 
