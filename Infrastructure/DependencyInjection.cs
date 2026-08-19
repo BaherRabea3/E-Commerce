@@ -33,7 +33,7 @@ namespace Infrastructure
             {
                 options.User.RequireUniqueEmail = true;
             })
-                .AddRoles<IdentityRole<int>>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 

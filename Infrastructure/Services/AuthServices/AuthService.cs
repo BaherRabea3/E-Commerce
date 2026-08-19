@@ -7,12 +7,14 @@ namespace Infrastructure.Services.AuthServices
 {
     public class AuthService : IAuthService
     {
+        private readonly IAppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtProvider _jwtProvider;
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider, IAppDbContext context)
         {
             _userManager = userManager;
             _jwtProvider = jwtProvider;
+            _context = context;
         }
 
         public async Task<AuthResponseDto> GenerateNewJwtToken(string Email, string RefreshToken)
@@ -89,36 +91,46 @@ namespace Infrastructure.Services.AuthServices
                 LastName = LastName,
             };
 
-            var result = await _userManager.CreateAsync(appUser, Password);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (!result.Succeeded)
+            try
             {
-                var errorMessage = string.Join(" | ", result.Errors.Select(e => e.Description));
+                var result = await _userManager.CreateAsync(appUser, Password);
 
-                return new AuthResponseDto { Message = errorMessage };
+                if (!result.Succeeded)
+                {
+                    var errorMessage = string.Join(" | ", result.Errors.Select(e => e.Description));
+
+                    return new AuthResponseDto { Message = errorMessage };
+                }
+
+                var RoleResult = await _userManager.AddToRoleAsync(appUser, "Customer");
+
+                if (!RoleResult.Succeeded)
+                {
+                    var errorMessage = string.Join(" | ", RoleResult.Errors.Select(e => e.Description));
+
+                    return new AuthResponseDto { Message = errorMessage };
+                }
+
+                // generate token and refresh token
+
+                var authResponse = await _jwtProvider.GenerateTokenAsync(Email);
+
+                authResponse.IsAuthenticated = true;
+
+                appUser.RefreshToken = authResponse.RefreshToken;
+                appUser.RefreshTokenExpiration = authResponse.RefreshTokenExpiration;
+
+                await _userManager.UpdateAsync(appUser);
+
+                return authResponse;
             }
-
-            var RoleResult = await _userManager.AddToRoleAsync(appUser, "Customer");
-
-            if (!RoleResult.Succeeded)
+            catch
             {
-                var errorMessage = string.Join(" | ", RoleResult.Errors.Select(e => e.Description));
-
-                return new AuthResponseDto { Message = errorMessage };
+                await transaction.RollbackAsync();
+                throw;
             }
-
-            // generate token and refresh token
-
-            var authResponse = await _jwtProvider.GenerateTokenAsync(Email);
-
-            authResponse.IsAuthenticated = true;
-
-            appUser.RefreshToken = authResponse.RefreshToken;
-            appUser.RefreshTokenExpiration = authResponse.RefreshTokenExpiration;
-
-            await _userManager.UpdateAsync(appUser);
-
-            return authResponse;
         }
     }
 }
