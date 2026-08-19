@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Payments.Queries.GetPaymentDetails
 {
-   public sealed record GetPaymentDetailsQuery(int OrderId , Guid CustomerId) : IRequest<Result<PaymentDetailsDto>>
+   public sealed record GetPaymentDetailsQuery(int OrderId , int CustomerId) : IRequest<Result<PaymentDetailsDto>>
     {
     }
 }

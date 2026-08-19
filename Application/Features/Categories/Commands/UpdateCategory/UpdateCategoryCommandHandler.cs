@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities.Categories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Categories.Commands.UpdateCategory
 {
@@ -21,6 +22,11 @@ namespace Application.Features.Categories.Commands.UpdateCategory
 
             if (category is null)
                 return Result.Failure(CategoryErrors.NotFound(request.id));
+
+            var isExisted = await _context.Categories.AnyAsync(x => x.Name == request.name && x.Id != category.Id, cancellationToken);
+
+            if (isExisted)
+                return Result.Failure<int>(CategoryErrors.DuplicateName);
 
             category.Name = request.name;
             category.Description = request.description;

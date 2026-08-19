@@ -23,7 +23,7 @@ namespace Application.Features.Products.Queries.GetProducts
             var query = _context.Products.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(request.search))
-                query = _context.Products
+                query = query
                     .ApplyFilter(p => p.Name.ToLowerInvariant().Contains(request.search.ToLowerInvariant()));
 
             if (request.price.HasValue)

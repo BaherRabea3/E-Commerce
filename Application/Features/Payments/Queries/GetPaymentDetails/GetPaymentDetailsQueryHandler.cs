@@ -19,10 +19,12 @@ namespace Application.Features.Payments.Queries.GetPaymentDetails
 
         public async Task<Result<PaymentDetailsDto>> Handle(GetPaymentDetailsQuery request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
             var payment = await _context.Payments
                                     .AsNoTracking()
                                     .Where(p => p.OrderId == request.OrderId
-                                             && p.CustomerId == request.CustomerId)
+                                             && p.CustomerId == customer.Id)
                                     .Select(p => new PaymentDetailsDto
                                     {
                                         PaymentId = p.Id,

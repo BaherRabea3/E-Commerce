@@ -131,6 +131,7 @@ namespace Application.Features.Payments.Commands.ProcessStripeWebhook
                     Status = ShippingStatus.InTransit,
                     Method = "Standard"
                 };
+                _context.Shipments.Add(shipment);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
