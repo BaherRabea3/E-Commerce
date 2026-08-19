@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Queries.GetOrderById
 {
-    public sealed record GetOrderByIdQuery(int Id, Guid CustomerId) : IRequest<Result<OrderDetailResponseDto>>
+    public sealed record GetOrderByIdQuery(int Id, int CustomerId) : IRequest<Result<OrderDetailResponseDto>>
     {
     }
 }

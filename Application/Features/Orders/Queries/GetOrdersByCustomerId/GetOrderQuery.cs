@@ -6,8 +6,8 @@ using MediatR;
 
 namespace Application.Features.Orders.Queries.GetOrdersByCustomerId
 {
-    public sealed record GetOrderQuery(
-        Guid customerId,
+    public sealed record GetOrdersByCustomerIdQuery(
+        int customerId,
         int? page,
         int? pageSize,
         OrderStatus? Status,

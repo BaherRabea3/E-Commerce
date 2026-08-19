@@ -23,13 +23,16 @@ namespace Application.Features.Orders.Queries.GetOrderById
 
         public async Task<Result<OrderDetailResponseDto>> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
         {
+
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
             var order = await _context.Orders
                                 .AsNoTracking()
                                 .Include(o => o.Address)
                                 .Include(o => o.Payment)
                                 .Include(o => o.Shipment)
                                 .FirstOrDefaultAsync(o => o.Id == request.Id
-                                                         && o.CustomerId == request.CustomerId,
+                                                         && o.CustomerId == customer.Id,
                                                          cancellationToken);
 
             if(order is null)

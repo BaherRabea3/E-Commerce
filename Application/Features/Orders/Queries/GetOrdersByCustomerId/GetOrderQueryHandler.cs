@@ -9,22 +9,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Orders.Queries.GetOrdersByCustomerId
 {
-    public sealed class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, Result<PaginatedResult<OrderSummaryDto>>>
+    public sealed class GetOrdersByCustomerIdQueryHandler : IRequestHandler<GetOrdersByCustomerIdQuery, Result<PaginatedResult<OrderSummaryDto>>>
     {
         private readonly IAppDbContext _context;
 
-        public GetOrderQueryHandler(IAppDbContext context)
+        public GetOrdersByCustomerIdQueryHandler(IAppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Result<PaginatedResult<OrderSummaryDto>>> Handle(GetOrderQuery request,CancellationToken cancellationToken)
+        public async Task<Result<PaginatedResult<OrderSummaryDto>>> Handle(GetOrdersByCustomerIdQuery request,CancellationToken cancellationToken)
         {
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
             var query = _context.Orders
                 .AsNoTracking()
                 .Include(o => o.Payment)
                 .Include(o => o.Shipment)
-                .Where(o => o.CustomerId == request.customerId)
+                .Where(o => o.CustomerId == Customer.Id)
                 .OrderByDescending(o => o.Date)
                 .AsQueryable();
 
@@ -46,7 +48,7 @@ namespace Application.Features.Orders.Queries.GetOrdersByCustomerId
                 .ToListAsync(cancellationToken);
 
             if (!orderList.Any())
-                return Result.Failure<PaginatedResult<OrderSummaryDto>>(OrderErrors.NotFound);
+                return Result.Failure<PaginatedResult<OrderSummaryDto>>(OrderErrors.CustomerHasNoOrders);
 
             var response = new PaginatedResult<OrderSummaryDto>()
             {

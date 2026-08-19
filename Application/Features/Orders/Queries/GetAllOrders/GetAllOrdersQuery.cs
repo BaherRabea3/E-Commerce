@@ -8,8 +8,8 @@ namespace Application.Features.Orders.Queries.GetAllOrders
 {
     public sealed record GetAllOrdersQuery( 
 
-    int Page,
-    int PageSize,
+    int? Page,
+    int? PageSize,
 
     OrderStatus? Status,
     PaymentStatus? PaymentStatus,

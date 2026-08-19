@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Orders.Commands.CancelOrder
 {
-    public sealed record CancelOrderCommand(int OrderId, Guid CustomerId) : IRequest<Result<CancelOrderResponseDto>>
+    public sealed record CancelOrderCommand(int OrderId, int CustomerId) : IRequest<Result<CancelOrderResponseDto>>
     {
     }
 }

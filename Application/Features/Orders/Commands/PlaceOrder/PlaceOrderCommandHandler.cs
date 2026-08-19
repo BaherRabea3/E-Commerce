@@ -44,17 +44,18 @@ namespace Application.Features.Orders.Commands.PlaceOrder
                 
                 return Result.Success(MapToResponseDto(existingOrder, clientSecret));
             }
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId);
 
             var cart = _context.Carts
                                 .Include(c => c.CartItems)
-                                .FirstOrDefault(c => c.CustomerId == request.customerId);
+                                .FirstOrDefault(c => c.CustomerId == Customer.Id);
 
             if(cart is null)
                 return Result.Failure<PlaceOrderResponseDto>(CartErrors.NotFound);
 
             var address = await _context.Addresses
                 .FirstOrDefaultAsync(a => a.Id == request.addressId &&
-                                          a.CustomerId == request.customerId,
+                                          a.CustomerId == Customer.Id,
                                           cancellationToken);
             if (address is null)
                 return Result.Failure<PlaceOrderResponseDto>(AddressErrors.NotFound);
@@ -85,7 +86,7 @@ namespace Application.Features.Orders.Commands.PlaceOrder
 
             var order = new Order
             {
-                CustomerId = request.customerId,
+                CustomerId = Customer.Id,
                 AddressId = request.addressId,
                 IdempotencyKey = request.IdempotencyKey,
                 Date = DateTime.UtcNow,
@@ -119,7 +120,7 @@ namespace Application.Features.Orders.Commands.PlaceOrder
 
             order.Payment = new Payment()
             {
-                CustomerId = request.customerId,
+                CustomerId = Customer.Id,
                 CreatedAt = DateTime.UtcNow,
                 Method = request.paymentMethod,
                 Status = PaymentStatus.Pending,

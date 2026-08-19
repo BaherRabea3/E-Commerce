@@ -24,6 +24,7 @@ namespace Application.Features.Orders.Queries.GetAllOrders
                                 .Include(o => o.Customer)
                                 .Include(o => o.Payment)
                                 .Include(o => o.Shipment)
+                                .Include(o => o.OrderItems)
                                 .AsQueryable();
 
             
@@ -79,8 +80,8 @@ namespace Application.Features.Orders.Queries.GetAllOrders
 
             return Result.Success(new PaginatedResult<OrderSummaryDto>()
             {
-                page = request.Page,
-                pageSize = request.PageSize,
+                page = request.Page ?? 1,
+                pageSize = request.PageSize ?? 8,
                 totalCount = TotalCount,
                 items = items
             });

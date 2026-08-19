@@ -23,10 +23,13 @@ namespace Application.Features.Orders.Commands.CancelOrder
 
         public async Task<Result<CancelOrderResponseDto>> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
         {
+
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId);
+
             var order = await _context.Orders
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == request.OrderId &&
-                                          o.CustomerId == request.CustomerId, cancellationToken);
+                                          o.CustomerId == customer.Id, cancellationToken);
 
             if (order is null)
                 return Result.Failure<CancelOrderResponseDto>(OrderErrors.NotFound);
@@ -36,15 +39,11 @@ namespace Application.Features.Orders.Commands.CancelOrder
 
             var wasConfirmed = order.Status == OrderStatus.Confirmed;
 
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-
             foreach (var item in order.OrderItems)
             {
-                await _context.Products
-                    .Where(p => p.Id == item.ProductId)
-                    .ExecuteUpdateAsync(
-                        s => s.SetProperty(p => p.Quantity, p => p.Quantity + item.Quantity),
-                        cancellationToken);
+                var product = await _context.Products.FirstAsync(x => x.Id == item.ProductId, CancellationToken.None);
+
+                product.Quantity += item.Quantity;
             }
 
             decimal refundAmount = 0;
@@ -63,8 +62,6 @@ namespace Application.Features.Orders.Commands.CancelOrder
             order.CancelledAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
-
-            await transaction.CommitAsync(cancellationToken);
 
             // send email notification to customer
 
