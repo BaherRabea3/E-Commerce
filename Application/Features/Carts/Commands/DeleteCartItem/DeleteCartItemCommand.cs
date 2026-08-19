@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Carts.Commands.DeleteCartItem
 {
-    public sealed record DeleteCartItemCommand(int id , Guid customerId) : IRequest<Result>
+    public sealed record DeleteCartItemCommand(int id , int customerId) : IRequest<Result>
     {
     }
 }

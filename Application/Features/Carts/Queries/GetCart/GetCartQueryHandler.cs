@@ -19,13 +19,15 @@ namespace Application.Features.Carts.Queries.GetCart
 
         public async Task<Result<CartDetailsDto>> Handle(GetCartQuery request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
             var cart = await _context.Carts
                                .AsNoTracking()
                                .Include(c => c.CartItems)
                                     .ThenInclude(ci => ci.Product)
-                               .FirstOrDefaultAsync(c => c.CustomerId == request.customerId , cancellationToken);
+                               .FirstOrDefaultAsync(c => c.CustomerId == customer.Id , cancellationToken);
             if (cart is null)
-                return Result.Failure<CartDetailsDto>(CartErrors.NotOwned);
+                return Result.Failure<CartDetailsDto>(CartErrors.NotFound);
 
             var result = new CartDetailsDto
             {

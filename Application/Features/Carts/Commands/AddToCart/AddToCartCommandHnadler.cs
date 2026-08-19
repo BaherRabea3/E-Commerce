@@ -19,6 +19,8 @@ namespace Application.Features.Carts.Commands.AddToCart
 
         public async Task<Result<int>> Handle(AddToCartCommand request, CancellationToken cancellationToken)
         {
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
             var product = await _context.Products.FindAsync([request.productId], cancellationToken);
 
             if (product is null)
@@ -27,7 +29,7 @@ namespace Application.Features.Carts.Commands.AddToCart
             if (product.IsDeleted)
                 return Result.Failure<int>(ProductErrors.Discontinued);
 
-            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == request.customerId, cancellationToken);
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.CustomerId == Customer.Id, cancellationToken);
 
             CartItem? cartItem = null;
 
@@ -35,7 +37,7 @@ namespace Application.Features.Carts.Commands.AddToCart
             {
                 cart = new Cart()
                 {
-                    CustomerId = request.customerId,
+                    CustomerId = Customer.Id,
                     CreatedAt = DateTime.UtcNow
                 };
                 _context.Carts.Add(cart);

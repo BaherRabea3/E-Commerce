@@ -18,7 +18,8 @@ namespace Application.Features.Carts.Commands.UpdateCartItem
 
         public async Task<Result> Handle(UpdateCartItemCommand request, CancellationToken cancellationToken)
         {
-           
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
 
             var cartItem = await _context.CartItems
                                      .Include(ci => ci.Cart)
@@ -28,7 +29,7 @@ namespace Application.Features.Carts.Commands.UpdateCartItem
             if(cartItem is null)
                 return Result.Failure(CartErrors.ItemNotFound(request.cartItemId));
 
-            if (cartItem.Cart!.CustomerId != request.customerId)
+            if (cartItem.Cart!.CustomerId != Customer.Id)
                 return Result.Failure(CartErrors.NotOwned);
 
 

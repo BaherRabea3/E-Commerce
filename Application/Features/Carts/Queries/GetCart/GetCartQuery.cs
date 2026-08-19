@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Carts.Queries.GetCart
 {
-    public sealed record GetCartQuery(Guid customerId) : IRequest<Result<CartDetailsDto>>
+    public sealed record GetCartQuery(int customerId) : IRequest<Result<CartDetailsDto>>
     {
     }
 }

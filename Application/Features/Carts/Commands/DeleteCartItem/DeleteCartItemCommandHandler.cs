@@ -19,9 +19,13 @@ namespace Application.Features.Carts.Commands.DeleteCartItem
 
         public async Task<Result> Handle(DeleteCartItemCommand request, CancellationToken cancellationToken)
         {
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
+            var cart = await _context.Carts.FirstAsync(x => x.CustomerId == Customer.Id, cancellationToken);
+
             var cartItem = await _context.CartItems
                             .FirstOrDefaultAsync(ci => 
-                                        ci.Cart!.CustomerId == request.customerId &&
+                                        cart.CustomerId == Customer.Id &&
                                         ci.Id == request.id, cancellationToken);
 
             if(cartItem is null)

@@ -17,9 +17,12 @@ namespace Application.Features.Carts.Commands.ClearCart
 
         public async Task<Result> Handle(ClearCartCommand request, CancellationToken cancellationToken)
         {
+
+            var Customer = await _context.Customers.FirstAsync(x => x.UserId == request.customerId, cancellationToken);
+
             var cart = await _context.Carts
                                .Include(c => c.CartItems)                
-                               .FirstOrDefaultAsync(c => c.CustomerId == request.customerId , cancellationToken);
+                               .FirstOrDefaultAsync(c => c.CustomerId == Customer.Id , cancellationToken);
 
             if (cart is null)
                 return Result.Failure(CartErrors.NotFound);
