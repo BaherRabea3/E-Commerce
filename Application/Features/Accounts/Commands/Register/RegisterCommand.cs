@@ -9,6 +9,7 @@ namespace Application.Features.Accounts.Commands.Register
         (string FirstName,
         string LastName,
         string Email,
+        DateTime DateOfBirth,
         string Password,
         string ConfirmPassword) : IRequest<Result<AuthResponseDto>>
     {
