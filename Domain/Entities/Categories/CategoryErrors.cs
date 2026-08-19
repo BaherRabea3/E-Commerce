@@ -9,6 +9,8 @@ namespace Domain.Entities.Categories
             => Error.NotFound("Category.NotFound", $"Category with id {id} not found");
         public static Error HasProducts(int id) 
             => Error.Conflict("Category.HasProducts", $"Cannot delete a category that has associated products");
+        public static Error DuplicateName
+            => Error.Conflict("Category.DuplicateName", $"The category name is arleady existed");
 
     }
 }

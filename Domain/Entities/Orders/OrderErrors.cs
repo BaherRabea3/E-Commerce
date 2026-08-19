@@ -8,6 +8,8 @@ namespace Domain.Entities.Orders
     {
         public static Error NotFound 
             => Error.NotFound("Order.NotFound", "No Order found");
+        public static Error CustomerHasNoOrders
+           => Error.NotFound("Order.CustomerHasNoOrders", "Customer Hasn't order yet");
         public static Error NotCancellable
             => Error.Conflict("Order.NotCancellable", "Order not cancellable");
 
