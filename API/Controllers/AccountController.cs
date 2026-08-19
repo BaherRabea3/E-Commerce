@@ -23,6 +23,7 @@ namespace API.Controllers
             var response = await _mediator.Send(new RegisterCommand(request.FirstName,
                                                               request.LastName,
                                                               request.Email,
+                                                              request.DateOfBirth,
                                                               request.Password,
                                                               request.ConfirmationPassword));
 

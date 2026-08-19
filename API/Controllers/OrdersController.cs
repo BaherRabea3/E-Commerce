@@ -22,7 +22,7 @@ namespace API.Controllers
         public async Task<IActionResult> Get([FromQuery]GetCustomerOrdersRequest request)
         {
             var response = await _mediator
-                .Send(new GetOrderQuery(CustomerId,
+                .Send(new GetOrdersByCustomerIdQuery(CustomerId,
                                         request.page,
                                         request.pageSize,
                                         request.Status,

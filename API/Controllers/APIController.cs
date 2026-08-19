@@ -15,8 +15,8 @@ namespace API.Controllers
         {
             _mediator = mediator;
         }
-        protected Guid CustomerId =>
-           Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
+        protected int CustomerId =>
+           int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
                ?? throw new UnauthorizedAccessException("CustomerId claim missing from token."));
         protected IActionResult HandleFailure(Result result) =>
             result switch
