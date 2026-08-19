@@ -18,8 +18,10 @@ namespace Application.Features.Addresses.Commands.DeleteAddress
 
         public async Task<Result> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
             var address = await _context.Addresses
-                .FirstOrDefaultAsync(a => a.CustomerId == request.CustomerId
+                .FirstOrDefaultAsync(a => a.CustomerId == customer.Id
                                         && a.Id == request.AddressId);
 
             if (address is null)

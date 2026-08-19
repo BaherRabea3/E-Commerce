@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Features.Addresses.Commands.DeleteAddress
 {
-    public sealed record DeleteAddressCommand(Guid CustomerId ,int AddressId) : IRequest<Result>
+    public sealed record DeleteAddressCommand(int CustomerId ,int AddressId) : IRequest<Result>
     {
     }
 }

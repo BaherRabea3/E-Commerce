@@ -1,5 +1,6 @@
 ﻿
 using Application.Common.Interfaces;
+using Azure.Identity;
 using Domain.Common;
 using Domain.Entities.Addresses;
 using MediatR;
@@ -18,8 +19,10 @@ namespace Application.Features.Addresses.Commands.UpdateAddress
 
         public async Task<Result> Handle(UpdateAddressCommand request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
             var address = await _context.Addresses
-                .FirstOrDefaultAsync(a => a.CustomerId == request.CustomerId 
+                .FirstOrDefaultAsync(a => a.CustomerId == customer.Id
                                         && a.Id == request.addressId);
 
             if(address is null)

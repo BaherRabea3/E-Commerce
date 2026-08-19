@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Addresses.Commands.UpdateAddress
 {
-    public sealed record UpdateAddressCommand(Guid CustomerId, int addressId ,
+    public sealed record UpdateAddressCommand(int CustomerId, int addressId ,
         string? State,
         string? PostalCode,
         string? HouseNo,

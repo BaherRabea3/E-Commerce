@@ -19,16 +19,18 @@ namespace Application.Features.Addresses.Queries.GetCustomerAddresses
 
         public async Task<Result<List<AddressDto>>> Handle(GetCustomerAddressesQuery request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
 
             bool existed = await _context.Addresses
-                .AnyAsync(a => a.CustomerId == request.CustomerId, cancellationToken);
+                .AnyAsync(a => a.CustomerId == customer.Id, cancellationToken);
 
             if(!existed)
                 return Result.Failure<List<AddressDto>>(AddressErrors.NotFound);
 
             var AddressList = await _context.Addresses
                                       .AsNoTracking()
-                                      .Where(a => a.CustomerId == request.CustomerId)
+                                      .Where(a => a.CustomerId == customer.Id)
                                       .Select(a => new AddressDto
                                       {
                                           AddressId = a.Id,

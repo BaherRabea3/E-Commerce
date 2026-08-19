@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities.Addresses;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Addresses.Commands.CreateAddress
 {
@@ -17,13 +18,15 @@ namespace Application.Features.Addresses.Commands.CreateAddress
 
         public async Task<Result> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
         {
+            var customer = await _context.Customers.FirstAsync(x => x.UserId == request.CustomerId, cancellationToken);
+
             var address = new Address()
             {
                  Area = request.Area,
                  city = request.City,
                  state = request.State,
                  country = request.Country,
-                 CustomerId = request.CustomerId,
+                 CustomerId = customer.Id,
                  HouseNo = request.HouseNo,
                  PostalCode = request.PostalCode,
                  StreetBlock =  request.Street,
