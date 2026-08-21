@@ -1,8 +1,10 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Settings;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
 using Infrastructure.Identity;
 using Infrastructure.Services.AuthServices;
+using Infrastructure.Services.EmailServices;
 using Infrastructure.Services.PaymentServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -73,7 +75,9 @@ namespace Infrastructure
 
             services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
 
-            
+            services.Configure<EmailSettings>(configuration.GetSection("Email"));
+            services.AddScoped<IEmailService, EmailService>();
+
 
             return services;
         }

@@ -4,6 +4,7 @@ using Application.Common.Interfaces;
 using Domain.Common;
 using Domain.Entities.Payments;
 using Domain.Enums;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +14,12 @@ namespace Application.Features.Payments.Commands.RefundPayment
     {
         private readonly IAppDbContext _context;
         private readonly IPaymentGatewayService _paymentService;
-        public RefundPaymentCommandHandler(IAppDbContext context, IPaymentGatewayService payment)
+        private readonly IBackgroundJobClient _backgroundJobClient;
+        public RefundPaymentCommandHandler(IAppDbContext context, IPaymentGatewayService payment, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _paymentService = payment;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<Result<RefundPaymentResponseDto>> Handle(RefundPaymentCommand request, CancellationToken cancellationToken)
@@ -62,6 +65,7 @@ namespace Application.Features.Payments.Commands.RefundPayment
             await _context.SaveChangesAsync(cancellationToken);
 
             // send notification
+            _backgroundJobClient.Enqueue<IEmailService>(x => x.SendRefundIssuedAsync(payment.OrderId, CancellationToken.None));
 
             return Result.Success(new RefundPaymentResponseDto()
             {

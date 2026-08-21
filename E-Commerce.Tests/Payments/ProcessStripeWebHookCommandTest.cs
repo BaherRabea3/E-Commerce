@@ -7,6 +7,7 @@ using Domain.Entities.Payments;
 using Domain.Entities.Shipments;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
+using Hangfire;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace E_Commerce.Tests.Payments
         private readonly DbContextMock<AppDbContext> _dbContextMock;
         private readonly Mock<IPaymentGatewayService> _paymentServiceMock;
         private readonly Mock<ILogger<ProcessStripeWebhookCommandHandler>> _iLogger;
+        private readonly Mock<IBackgroundJobClient> _backgroundJobClientMock;
         public ProcessStripeWebHookCommandTest()
         {
             var paymentEvents = new List<PaymentGatewayEvent>()
@@ -57,8 +59,9 @@ namespace E_Commerce.Tests.Payments
             _dbContextMock.CreateDbSetMock(x => x.Payments, payments);
             _dbContextMock.CreateDbSetMock(x => x.Shipments, shipments);
 
+            _backgroundJobClientMock = new Mock<IBackgroundJobClient>();
 
-            _handler = new(_dbContextMock.Object, _iLogger.Object, _paymentServiceMock.Object);
+            _handler = new(_dbContextMock.Object, _iLogger.Object, _paymentServiceMock.Object, _backgroundJobClientMock.Object);
         }
 
         [Fact]

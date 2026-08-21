@@ -2,6 +2,7 @@
 using API.Exceptions;
 using Application;
 using Application.Common.Settings;
+using Hangfire;
 using Infrastructure;
 using Infrastructure.Services.PaymentServices;
 
@@ -22,7 +23,7 @@ namespace API
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddControllers();
             builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddApplication();
+            builder.Services.AddApplication(builder.Configuration);
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -39,6 +40,8 @@ namespace API
 
 
             app.UseHttpsRedirection();
+
+            app.UseHangfireDashboard("/hangfire");
 
             app.UseExceptionHandler();
 

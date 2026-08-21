@@ -1,8 +1,10 @@
 ﻿
 using Application.Common.Interfaces;
 using Domain.Common;
+using Domain.Entities.Payments;
 using Domain.Entities.Shipments;
 using Domain.Enums;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,12 +16,14 @@ namespace Application.Features.Payments.Commands.ProcessStripeWebhook
         private readonly IAppDbContext _context;
         private readonly IPaymentGatewayService _payment;
         private readonly ILogger<ProcessStripeWebhookCommandHandler> _logger;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public ProcessStripeWebhookCommandHandler(IAppDbContext context, ILogger<ProcessStripeWebhookCommandHandler> logger, IPaymentGatewayService payment)
+        public ProcessStripeWebhookCommandHandler(IAppDbContext context, ILogger<ProcessStripeWebhookCommandHandler> logger, IPaymentGatewayService payment, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _logger = logger;
             _payment = payment;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<Result> Handle(ProcessStripeWebhookCommand request, CancellationToken cancellationToken)
@@ -53,6 +57,15 @@ namespace Application.Features.Payments.Commands.ProcessStripeWebhook
                         "Unhandled Stripe event type: {EventType}", request.EventType);
                     break;
             }
+
+            _context.PaymentGatewayEvents.Add(new PaymentGatewayEvent
+            {
+                GatewayEventId = request.EventId,
+                EventType = request.EventType,
+                ReceivedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
         }
@@ -88,6 +101,7 @@ namespace Application.Features.Payments.Commands.ProcessStripeWebhook
             await _context.SaveChangesAsync(cancellationToken);
 
             // send notification
+            _backgroundJobClient.Enqueue<IEmailService>(x => x.SendPaymentFailedAsync(payment.OrderId, CancellationToken.None));
         }
 
         private async Task HandlePaymentSucceeded(string rawJson, CancellationToken cancellationToken)
@@ -137,6 +151,7 @@ namespace Application.Features.Payments.Commands.ProcessStripeWebhook
             await _context.SaveChangesAsync(cancellationToken);
 
             // send notification
+            _backgroundJobClient.Enqueue<IEmailService>(x => x.SendOrderConfirmedAsync(payment.OrderId, CancellationToken.None));
 
         }
     }

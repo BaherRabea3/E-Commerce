@@ -5,6 +5,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Payments;
 using Domain.Entities.Shipments;
 using Domain.Enums;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,11 +15,13 @@ namespace Application.Features.Orders.Commands.UpdateOrderStatus
     {
         private readonly IAppDbContext _context;
         private readonly IPaymentGatewayService _paymentService;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public UpdateOrderStatusCommandHandler(IAppDbContext context, IPaymentGatewayService paymentService)
+        public UpdateOrderStatusCommandHandler(IAppDbContext context, IPaymentGatewayService paymentService, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _paymentService = paymentService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<Result<UpdateOrderStatusResponseDto>> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
@@ -54,6 +57,8 @@ namespace Application.Features.Orders.Commands.UpdateOrderStatus
             order.Status = request.NewStatus;
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            EnqueueNotification(order.Id, request.NewStatus);
 
             return Result.Success(new UpdateOrderStatusResponseDto()
             {
@@ -115,6 +120,24 @@ namespace Application.Features.Orders.Commands.UpdateOrderStatus
             else
             {
                 order.Shipment.Status = ShippingStatus.InTransit;
+            }
+        }
+        private void EnqueueNotification(int orderId, OrderStatus newStatus)
+        {
+            switch (newStatus)
+            {
+                case OrderStatus.Shipped:
+                    _backgroundJobClient.Enqueue<IEmailService>(
+                        n => n.SendOrderShippedAsync(orderId, CancellationToken.None));
+                    break;
+                case OrderStatus.Delivered:
+                    _backgroundJobClient.Enqueue<IEmailService>(
+                        n => n.SendOrderDeliveredAsync(orderId, CancellationToken.None));
+                    break;
+                case OrderStatus.Cancelled:
+                    _backgroundJobClient.Enqueue<IEmailService>(
+                        n => n.SendOrderCancelledAsync(orderId, CancellationToken.None));
+                    break;
             }
         }
     }

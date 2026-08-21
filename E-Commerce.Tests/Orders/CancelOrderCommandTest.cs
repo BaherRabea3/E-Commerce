@@ -8,6 +8,7 @@ using Domain.Entities.Payments;
 using Domain.Enums;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
+using Hangfire;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace E_Commerce.Tests.Orders
         private readonly CancelOrderCommandHandler _handler;
         private readonly DbContextMock<AppDbContext> _dbContextMock;
         private readonly Mock<IPaymentGatewayService> _paymentServiceMock;
+        private readonly Mock<IBackgroundJobClient> _backgroundJobClientMock;
 
         public CancelOrderCommandTest()
         {
@@ -75,8 +77,9 @@ namespace E_Commerce.Tests.Orders
             _dbContextMock.CreateDbSetMock(x => x.Products, products);
 
             _paymentServiceMock = new Mock<IPaymentGatewayService>();
+            _backgroundJobClientMock = new Mock<IBackgroundJobClient>();
 
-            _handler = new(_dbContextMock.Object, _paymentServiceMock.Object);
+            _handler = new(_dbContextMock.Object, _paymentServiceMock.Object, _backgroundJobClientMock.Object);
             
         }
 

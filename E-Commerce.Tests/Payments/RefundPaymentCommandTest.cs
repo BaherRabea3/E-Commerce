@@ -10,6 +10,7 @@ using Domain.Entities.Shipments;
 using Domain.Enums;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
+using Hangfire;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,8 @@ namespace E_Commerce.Tests.Payments
         private readonly RefundPaymentCommandHandler _handler;
         private readonly DbContextMock<AppDbContext> _dbContextMock;
         private readonly Mock<IPaymentGatewayService> _paymentServiceMock;
+        private readonly Mock<IBackgroundJobClient> _backgroundJobClientMock;
+
         public RefundPaymentCommandTest()
         {
             var payments = new List<Payment>()
@@ -110,9 +113,10 @@ namespace E_Commerce.Tests.Payments
             _dbContextMock.CreateDbSetMock(x => x.Products, products);
             _dbContextMock.CreateDbSetMock(x => x.OrderItems, orderItems);
 
+            _backgroundJobClientMock = new Mock<IBackgroundJobClient>();
 
 
-            _handler = new(_dbContextMock.Object, _paymentServiceMock.Object);
+            _handler = new(_dbContextMock.Object, _paymentServiceMock.Object, _backgroundJobClientMock.Object);
         }
 
         [Fact]

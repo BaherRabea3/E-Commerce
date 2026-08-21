@@ -4,6 +4,7 @@ using Domain.Common;
 using Domain.Entities.Orders;
 using Domain.Entities.Payments;
 using Domain.Enums;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,11 +15,13 @@ namespace Application.Features.Orders.Commands.CancelOrder
     {
         private readonly IAppDbContext _context;
         private readonly IPaymentGatewayService _paymentService;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public CancelOrderCommandHandler(IAppDbContext context, IPaymentGatewayService paymentService)
+        public CancelOrderCommandHandler(IAppDbContext context, IPaymentGatewayService paymentService, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _paymentService = paymentService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<Result<CancelOrderResponseDto>> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
@@ -64,6 +67,7 @@ namespace Application.Features.Orders.Commands.CancelOrder
             await _context.SaveChangesAsync(cancellationToken);
 
             // send email notification to customer
+            _backgroundJobClient.Enqueue<IEmailService>(x => x.SendOrderCancelledAsync(order.Id, CancellationToken.None));
 
             return Result.Success(new CancelOrderResponseDto()
             {
